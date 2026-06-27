@@ -29,11 +29,12 @@
         }
         canvas { position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; }
         
+        /* ✨ 타워 슬롯 디자인 가시성 상향 */
         .tower-slot {
-            position: absolute; width: 46px; height: 46px; background-color: rgba(255, 215, 0, 0.08);
-            border: 2px dashed #ffb74d; border-radius: 50%; z-index: 5; transform: translate(-50%, -50%);
-            display: flex; justify-content: center; align-items: center; font-size: 11px; color: #ffd700; cursor: pointer;
-            font-weight: bold; text-align: center; line-height: 1.1; padding: 2px;
+            position: absolute; width: 44px; height: 44px; background-color: rgba(255, 183, 77, 0.15);
+            border: 2px solid #ffb74d; border-radius: 50%; z-index: 5; transform: translate(-50%, -50%);
+            display: flex; justify-content: center; align-items: center; font-size: 10px; color: #fff; cursor: pointer;
+            font-weight: bold; text-align: center; line-height: 1.1; box-shadow: 0 0 8px rgba(255,183,77,0.3);
         }
 
         .unit-container {
@@ -43,9 +44,9 @@
         .hp-bar { width: 24px; height: 3px; background-color: #411; border: 1px solid #000; margin-bottom: 2px; }
         .hp-fill { width: 100%; height: 100%; background-color: #3f3; }
         
-        .ally-graphic { width: 14px; height: 14px; border: 1px solid #fff; border-radius: 3px; background: #3498db; }
-        .ally-graphic.archer { border-radius: 50%; background: #2ecc71; }
-        .ally-graphic.wizard { transform: rotate(45deg); background: #9b59b6; }
+        .ally-graphic { width: 15px; height: 15px; border: 1px solid #fff; border-radius: 3px; background: #3498db; box-shadow: 0 0 6px #3498db; }
+        .ally-graphic.archer { border-radius: 50%; background: #2ecc71; box-shadow: 0 0 6px #2ecc71; }
+        .ally-graphic.wizard { transform: rotate(45deg); background: #9b59b6; box-shadow: 0 0 6px #9b59b6; }
 
         .mobile-modal {
             display: none; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -84,7 +85,7 @@
 <body>
 
     <div id="top-bar">
-        <div class="info-item gold">💰 <span id="txt-gold">1200</span></div>
+        <div class="info-item gold">💰 <span id="txt-gold">1500</span></div>
         <div class="info-item hp">❤️ <span id="txt-hp">600/600</span></div>
         <div class="info-item wave">🌊 Wave <span id="txt-wave">1</span></div>
     </div>
@@ -92,20 +93,35 @@
     <div id="viewport">
         <div id="scroll-container">
             <canvas id="game-canvas"></canvas>
-            <div class="tower-slot" style="left: 150px; top: 150px;" data-idx="0">+</div>
-            <div class="tower-slot" style="left: 420px; top: 130px;" data-idx="1">+</div>
-            <div class="tower-slot" style="left: 720px; top: 220px;" data-idx="2">+</div>
-            <div class="tower-slot" style="left: 480px; top: 460px;" data-idx="3">+</div>
-            <div class="tower-slot" style="left: 200px; top: 480px;" data-idx="4">+</div>
-            <div class="tower-slot" style="left: 140px; top: 820px;" data-idx="5">+</div>
-            <div class="tower-slot" style="left: 450px; top: 760px;" data-idx="6">+</div>
-            <div class="tower-slot" style="left: 740px; top: 820px;" data-idx="7">+</div>
-            <div class="tower-slot" style="left: 750px; top: 1100px;" data-idx="8">+</div>
-            <div class="tower-slot" style="left: 420px; top: 1120px;" data-idx="9">+</div>
-            <div class="tower-slot" style="left: 160px; top: 1250px;" data-idx="10">+</div>
-            <div class="tower-slot" style="left: 450px; top: 1330px;" data-idx="11">+</div>
-            <div class="tower-slot" style="left: 780px; top: 520px;" data-idx="12">+</div>
-            <div class="tower-slot" style="left: 460px; top: 250px;" data-idx="13">+</div>
+            
+            <div class="tower-slot" style="left: 140px; top: 140px;" data-idx="0">🔨</div>
+            <div class="tower-slot" style="left: 240px; top: 140px;" data-idx="1">🔨</div>
+            <div class="tower-slot" style="left: 410px; top: 140px;" data-idx="2">🔨</div>
+            <div class="tower-slot" style="left: 420px; top: 260px;" data-idx="3">🔨</div>
+            <div class="tower-slot" style="left: 710px; top: 140px;" data-idx="4">🔨</div>
+            <div class="tower-slot" style="left: 710px; top: 240px;" data-idx="5">🔨</div>
+            
+            <div class="tower-slot" style="left: 180px; top: 460px;" data-idx="6">🔨</div>
+            <div class="tower-slot" style="left: 320px; top: 460px;" data-idx="7">🔨</div>
+            <div class="tower-slot" style="left: 480px; top: 460px;" data-idx="8">🔨</div>
+            <div class="tower-slot" style="left: 620px; top: 460px;" data-idx="9">🔨</div>
+            <div class="tower-slot" style="left: 760px; top: 460px;" data-idx="10">🔨</div>
+            
+            <div class="tower-slot" style="left: 170px; top: 600px;" data-idx="11">🔨</div>
+            <div class="tower-slot" style="left: 220px; top: 760px;" data-idx="12">🔨</div>
+            <div class="tower-slot" style="left: 410px; top: 760px;" data-idx="13">🔨</div>
+            <div class="tower-slot" style="left: 540px; top: 760px;" data-idx="14">🔨</div>
+            <div class="tower-slot" style="left: 740px; top: 760px;" data-idx="15">🔨</div>
+            <div class="tower-slot" style="left: 740px; top: 880px;" data-idx="16">🔨</div>
+
+            <div class="tower-slot" style="left: 200px; top: 1040px;" data-idx="17">🔨</div>
+            <div class="tower-slot" style="left: 420px; top: 1040px;" data-idx="18">🔨</div>
+            <div class="tower-slot" style="left: 550px; top: 1040px;" data-idx="19">🔨</div>
+            <div class="tower-slot" style="left: 750px; top: 1040px;" data-idx="20">🔨</div>
+            <div class="tower-slot" style="left: 160px; top: 1260px;" data-idx="21">🔨</div>
+            <div class="tower-slot" style="left: 310px; top: 1260px;" data-idx="22">🔨</div>
+            <div class="tower-slot" style="left: 460px; top: 1260px;" data-idx="23">🔨</div>
+            <div class="tower-slot" style="left: 610px; top: 1260px;" data-idx="24">🔨</div>
         </div>
     </div>
 
@@ -117,13 +133,12 @@
     <div id="modal-spawn" class="mobile-modal">
         <div class="modal-title">⚔️ 훈련소 병력 전선 급파 명령</div>
         <div class="grid-menu">
-            <div class="menu-btn" onclick="spawnAlly('knight', 1, 60)">🛡️ 정예 성기사<br>(1인) <span>60G</span><div class="menu-desc">단일 개체 저지선 확보</div></div>
-            <div class="menu-btn" onclick="spawnAlly('archer', 1, 80)">🏹 정예 보병궁수<br>(1인) <span>80G</span><div class="menu-desc">후방 단일 고속 지원</div></div>
-            <div class="menu-btn" onclick="spawnAlly('wizard', 1, 120)">🔮 원소 대마도사<br>(1인) <span>120G</span><div class="menu-desc">광역 격돌 특화 원소령</div></div>
-            
-            <div class="menu-btn" style="border-color: #3498db;" onclick="spawnAlly('knight', 6, 280)">⚔️ 성기사 수호분대<br>(6인) <span>280G</span><div class="menu-desc">철벽의 6인 연계 방어선</div></div>
-            <div class="menu-btn" style="border-color: #2ecc71;" onclick="spawnAlly('archer', 6, 360)">🎯 궁수 저격분대<br>(6인) <span>360G</span><div class="menu-desc">하늘을 뒤덮는 살상 화살</div></div>
-            <div class="menu-btn" style="border-color: #9b59b6;" onclick="spawnAlly('wizard', 6, 550)">🔥 마도 결계분대<br>(6인) <span>550G</span><div class="menu-desc">전장을 초토화하는 마법 모음</div></div>
+            <div class="menu-btn" onclick="spawnAlly('knight', 1, 60)">🛡️ 정예 성기사<br>(1인) <span>60G</span></div>
+            <div class="menu-btn" onclick="spawnAlly('archer', 1, 80)">🏹 정예 보병궁수<br>(1인) <span>80G</span></div>
+            <div class="menu-btn" onclick="spawnAlly('wizard', 1, 120)">🔮 원소 대마도사<br>(1인) <span>120G</span></div>
+            <div class="menu-btn" style="border-color: #3498db;" onclick="spawnAlly('knight', 6, 280)">⚔️ 성기사 수호분대<br>(6인) <span>280G</span></div>
+            <div class="menu-btn" style="border-color: #2ecc71;" onclick="spawnAlly('archer', 6, 360)">🎯 궁수 저격분대<br>(6인) <span>360G</span></div>
+            <div class="menu-btn" style="border-color: #9b59b6;" onclick="spawnAlly('wizard', 6, 550)">🔥 마도 결계분대<br>(6인) <span>550G</span></div>
         </div>
     </div>
 
@@ -155,63 +170,71 @@
         ];
 
         const gameState = {
-            gold: 1200, wave: 1, isWaveActive: false,
+            gold: 1500, wave: 1, isWaveActive: false,
             castleHp: 600, castleMaxHp: 600, castleUpCost: 200,
-            towers: Array(14).fill(null), selectedSlotIdx: null,
-            // 🛡️ 직관적이고 전형적인 판타지 RPG풍 타워 개명 명세서
+            towers: Array(25).fill(null), selectedSlotIdx: null,
             specs: {
                 basic:  { name: "초소 궁수탑", cost: 70,  range: 160, cooldown: 500,  damage: 15, color: "#7f8c8d", desc: "기본 원거리 순찰탑" },
-                heavy:  { name: "화염 거포탑", cost: 160, range: 140, cooldown: 1600, damage: 80, color: "#c0392b", desc: "광역 화염 스플래시" },
+                heavy:  { name: "화염 거포탑", cost: 160, range: 140, cooldown: 1600, damage: 85, color: "#e74c3c", desc: "광역 화염 스플래시" },
                 crit:   { name: "발리스타 탑", cost: 180, range: 150, cooldown: 450,  damage: 25, color: "#f1c40f", desc: "4배 치명타 일격 쇠뇌" },
-                sniper: { name: "마법 저격탑", cost: 220, range: 330, cooldown: 2200, damage: 140, color: "#27ae60", desc: "초장거리 마력 격침포" },
-                laser:  { name: "에테르 광선", cost: 260, range: 190, cooldown: 120,  damage: 5,  color: "#9b59b6", desc: "직선 궤도 전범위 관통" },
-                poison: { name: "역병 가스탑", cost: 150, range: 145, cooldown: 800,  damage: 12, color: "#2ecc71", desc: "치명적 중독 지속 도트" },
-                buffer: { name: "전쟁 토템탑", cost: 200, range: 130, cooldown: 9999, damage: 0,  color: "#e67e22", desc: "아군 타워 공속 +30%" },
-                chain:  { name: "연쇄 번개탑", cost: 280, range: 180, cooldown: 1100, damage: 45, color: "#3498db", desc: "동시 3인 전류 도크" },
-                shred:  { name: "구조 파괴탑", cost: 210, range: 150, cooldown: 900,  damage: 30, color: "#e84393", desc: "피격 대상 방어력 영구-5" }
+                sniper: { name: "마법 저격탑", cost: 220, range: 330, cooldown: 2200, damage: 145, color: "#2ecc71", desc: "초장거리 마력 저격포" },
+                laser:  { name: "에테르 광선", cost: 260, range: 190, cooldown: 120,  damage: 6,  color: "#9b59b6", desc: "직선 궤도 전범위 관통" },
+                poison: { name: "역병 가스탑", cost: 150, range: 145, cooldown: 800,  damage: 12, color: "#1abc9c", desc: "치명적 중독 지속 도트" },
+                buffer: { name: "전쟁 토템탑", cost: 200, range: 130, cooldown: 9999, damage: 0,  color: "#e67e22", desc: "주변 타워 공속 +30%" },
+                chain:  { name: "연쇄 번개탑", cost: 280, range: 180, cooldown: 1100, damage: 48, color: "#3498db", desc: "동시 3인 전류 토크" },
+                shred:  { name: "구조 파괴탑", cost: 210, range: 150, cooldown: 900,  damage: 32, color: "#e84393", desc: "피격 대상 방어력 영구-5" }
             }
         };
 
         let enemies = []; let allies = []; let projectiles = []; let particles = [];
 
-        function spawnParticles(x, y, color, count=12, speedMult=1) {
+        // ✨ 더욱 화려하고 커진 파티클 스파크 연산 로직
+        function spawnParticles(x, y, color, count=16, speedMult=1.5, sizeMult=1.5) {
             for(let i=0; i<count; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const speed = (Math.random() * 3 + 1) * speedMult;
+                const speed = (Math.random() * 4 + 2) * speedMult;
                 particles.push({
                     x: x, y: y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                    radius: Math.random() * 3 + 1, color: color, alpha: 1, decay: Math.random() * 0.04 + 0.02
+                    radius: (Math.random() * 4 + 2) * sizeMult, color: color, alpha: 1, decay: Math.random() * 0.03 + 0.015
                 });
             }
         }
 
         function drawGame() {
-            ctx.fillStyle = "#0c100d"; ctx.fillRect(0, 0, mapW, mapH);
+            ctx.fillStyle = "#0a0d0b"; ctx.fillRect(0, 0, mapW, mapH);
 
-            ctx.strokeStyle = '#1e2920'; ctx.lineWidth = 44; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#161f17'; ctx.lineWidth = 46; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             ctx.beginPath(); ctx.moveTo(roadPath[0].x, roadPath[0].y);
             for(let i=1; i<roadPath.length; i++) ctx.lineTo(roadPath[i].x, roadPath[i].y);
             ctx.stroke();
-            ctx.strokeStyle = '#2d3f31'; ctx.lineWidth = 30; ctx.stroke();
+            ctx.strokeStyle = '#223226'; ctx.lineWidth = 32; ctx.stroke();
 
-            ctx.fillStyle = "#ff4d4d"; ctx.fillRect(870, 1310, 30, 80);
+            ctx.fillStyle = "#e74c3c"; ctx.fillRect(870, 1310, 30, 80);
 
             gameState.towers.forEach(t => {
                 if(!t) return;
-                ctx.fillStyle = t.color; ctx.beginPath(); ctx.arc(t.x, t.y, 16, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = t.color; ctx.beginPath(); ctx.arc(t.x, t.y, 18, 0, Math.PI*2); ctx.fill();
+                // 네온 글로우 효과 부여
+                ctx.shadowColor = t.color; ctx.shadowBlur = 10;
                 ctx.fillStyle = "#fff"; ctx.font = "bold 9px sans-serif"; ctx.textAlign = "center";
-                ctx.fillText(`Lv.${t.level}`, t.x, t.y - 20);
-                ctx.fillText(t.name, t.x, t.y + 4);
+                ctx.fillText(`Lv.${t.level}`, t.x, t.y - 22);
+                ctx.fillText(t.name.slice(0,4), t.x, t.y + 4);
+                ctx.shadowBlur = 0; // 이펙트 초기화
             });
 
+            // ✨ 투사체 가시성 향상 렌더링
             projectiles.forEach(p => {
+                ctx.shadowColor = p.color; ctx.shadowBlur = 12;
                 ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2); ctx.fill();
+                ctx.shadowBlur = 0;
             });
 
             for(let i = particles.length - 1; i >= 0; i--) {
                 const pt = particles[i]; pt.x += pt.vx; pt.y += pt.vy; pt.alpha -= pt.decay;
                 if(pt.alpha <= 0) { particles.splice(i, 1); continue; }
-                ctx.save(); ctx.globalAlpha = pt.alpha; ctx.fillStyle = pt.color;
+                ctx.save(); ctx.globalAlpha = pt.alpha;
+                ctx.shadowColor = pt.color; ctx.shadowBlur = 6;
+                ctx.fillStyle = pt.color;
                 ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.radius, 0, Math.PI*2); ctx.fill(); ctx.restore();
             }
         }
@@ -235,7 +258,7 @@
                 }
             } else {
                 if(t.level >= 100) {
-                    menu.innerHTML = `<div class="menu-btn" style="grid-column:span 3;">👑 LEVEL 100 신화 등급 최고존엄</div>`;
+                    menu.innerHTML = `<div class="menu-btn" style="grid-column:span 3;">👑 최고 등급 달성</div>`;
                 } else {
                     const cost = t.level * 60 + 50;
                     menu.innerHTML = `<div class="menu-btn" style="grid-column:span 3; width:100%;" onclick="upgradeTower(${idx})">🔼 강화 (Lv.${t.level} -> Lv.${t.level+1}) <span>${cost}G</span></div>`;
@@ -256,8 +279,8 @@
                     type: type, name: spec.name, x: tx, y: ty, level: 1, damage: spec.damage,
                     range: spec.range, cooldown: spec.cooldown, color: spec.color, lastShot: 0
                 };
-                slotEl.style.background = spec.color; slotEl.style.color = "#000"; slotEl.innerHTML = spec.name.slice(0,2);
-                spawnParticles(tx, ty, spec.color, 25); updateUI();
+                slotEl.style.background = spec.color; slotEl.style.color = "#fff"; slotEl.innerHTML = spec.name.slice(0,2);
+                spawnParticles(tx, ty, spec.color, 35, 2, 1.5); updateUI();
             }
             document.getElementById('modal-build').style.display = 'none';
         }
@@ -269,12 +292,11 @@
                 t.damage = Math.floor(t.damage * 1.38);
                 t.range = Math.floor(t.range * 1.02);
                 if(t.cooldown > 110) t.cooldown -= 15;
-                spawnParticles(t.x, t.y, "#ffd700", 30, 1.3); updateUI();
+                spawnParticles(t.x, t.y, "#ffd700", 40, 2.5, 1.8); updateUI();
             }
             document.getElementById('modal-build').style.display = 'none';
         }
 
-        // ⚔️ 분대 제어 매커니즘이 내장된 병력 스폰 유닛 엔진
         function spawnAlly(type, count, totalCost) {
             if(gameState.gold < totalCost) return;
             gameState.gold -= totalCost; updateUI();
@@ -284,13 +306,12 @@
             const baseY = roadPath[baseIdx].y;
 
             for(let i = 0; i < count; i++) {
-                let hp = 100; let range = 24; let damage = 18;
-                if(type === 'archer') { hp = 55; range = 130; damage = 12; }
-                if(type === 'wizard') { hp = 60; range = 110; damage = 28; }
+                let hp = 100; let range = 26; let damage = 22;
+                if(type === 'archer') { hp = 60; range = 140; damage = 14; }
+                if(type === 'wizard') { hp = 65; range = 120; damage = 32; }
 
-                // 분대 소환 시 유닛들이 겹치지 않게 하는 다이내믹 포지셔닝 오프셋 연산
-                const offsetX = count === 1 ? 0 : (Math.random() * 30 - 15);
-                const offsetY = count === 1 ? 0 : (Math.random() * 40 - i * 12);
+                const offsetX = count === 1 ? 0 : (Math.random() * 34 - 17);
+                const offsetY = count === 1 ? 0 : (Math.random() * 44 - i * 14);
 
                 const container = document.createElement('div'); container.className = 'unit-container';
                 container.style.left = `${baseX + offsetX}px`; container.style.top = `${baseY + offsetY}px`;
@@ -377,28 +398,30 @@
 
                 if(target) {
                     if(t.type === 'laser') {
-                        ctx.strokeStyle = "rgba(155, 89, 182, 0.8)"; ctx.lineWidth = 4;
+                        // ✨ 에테르 일직선 레이저 이펙트 화려하게 두께 확장
+                        ctx.strokeStyle = "rgba(163, 102, 255, 0.9)"; ctx.lineWidth = 7;
                         ctx.beginPath(); ctx.moveTo(t.x, t.y); ctx.lineTo(target.currentX, target.currentY); ctx.stroke();
                         enemies.forEach(e => {
-                            if(Math.sqrt((e.currentX-target.currentX)**2 + (e.currentY-target.currentY)**2) < 45) {
+                            if(Math.sqrt((e.currentX-target.currentX)**2 + (e.currentY-target.currentY)**2) < 55) {
                                 e.hp -= Math.max(1, t.damage - e.armor); updateMonsterHp(e);
                             }
                         });
                     } else if(t.type === 'chain') { 
                         let chainTargets = [target];
                         for(let e of enemies) {
-                            if(e !== target && Math.sqrt((e.currentX-target.currentX)**2 + (e.currentY-target.currentY)**2) < 90) {
+                            if(e !== target && Math.sqrt((e.currentX-target.currentX)**2 + (e.currentY-target.currentY)**2) < 100) {
                                 chainTargets.push(e); if(chainTargets.length >= 3) break;
                             }
                         }
                         chainTargets.forEach((ct, idx) => {
-                            ct.hp -= Math.max(1, Math.floor(t.damage * (1 - idx*0.2) - ct.armor)); updateMonsterHp(ct);
-                            spawnParticles(ct.currentX, ct.currentY, t.color, 6, 0.8);
+                            ct.hp -= Math.max(1, Math.floor(t.damage * (1 - idx*0.18) - ct.armor)); updateMonsterHp(ct);
+                            // 전격 스파크 잔상 파티클 생성
+                            spawnParticles(ct.currentX, ct.currentY, t.color, 12, 1.2, 1.2);
                         });
                     } else {
                         projectiles.push({
                             x: t.x, y: t.y, target: target, type: t.type, damage: t.damage,
-                            speed: 12, radius: t.type==='heavy'?7:4, color: t.color
+                            speed: 13, radius: t.type==='heavy'?9:5, color: t.color
                         });
                     }
                     t.lastShot = currentTime;
@@ -410,21 +433,23 @@
                 if(!enemies.includes(p.target)) { p.element?.remove(); projectiles.splice(i,1); continue; }
 
                 const dx = p.target.currentX - p.x; const dy = p.target.currentY - p.y; const dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist < 12) {
+                if(dist < 14) {
                     let dmg = p.damage;
-                    if(p.type === 'crit' && Math.random() < 0.25) { dmg *= 4; spawnParticles(p.target.currentX, p.target.currentY, "#f1c40f", 20, 1.8); }
+                    if(p.type === 'crit' && Math.random() < 0.25) { dmg *= 4; spawnParticles(p.target.currentX, p.target.currentY, "#f1c40f", 35, 3, 2); }
                     if(p.type === 'poison') p.target.poisonTick = 5;
                     if(p.type === 'shred') p.target.armor = Math.max(0, p.target.armor - 5);
 
                     if(p.type === 'heavy') {
-                        spawnParticles(p.target.currentX, p.target.currentY, "#c0392b", 20, 1);
+                        // 화염 대폭발 이펙트
+                        spawnParticles(p.target.currentX, p.target.currentY, "#ff5722", 30, 2.5, 2);
                         enemies.forEach(e => {
-                            if(Math.sqrt((e.currentX-p.target.currentX)**2 + (e.currentY-p.target.currentY)**2) < 65) {
+                            if(Math.sqrt((e.currentX-p.target.currentX)**2 + (e.currentY-p.target.currentY)**2) < 75) {
                                 e.hp -= Math.max(1, p.damage - e.armor); updateMonsterHp(e);
                             }
                         });
                     } else {
-                        p.target.hp -= Math.max(1, dmg - p.target.armor); spawnParticles(p.target.currentX, p.target.currentY, p.color, 5, 0.6);
+                        p.target.hp -= Math.max(1, dmg - p.target.armor); 
+                        spawnParticles(p.target.currentX, p.target.currentY, p.color, 14, 1.2, 1.1);
                         updateMonsterHp(p.target);
                     }
                     projectiles.splice(i, 1);
@@ -462,28 +487,37 @@
         function loop(currentTime) {
             drawGame();
 
+            // ⚔️ [요구사항 반영] 아군 부대 전투 시 멈춤 및 끝단 도달 시 소멸 제어 시스템
             for(let i = allies.length - 1; i >= 0; i--) {
                 const ally = allies[i]; let engagedEnemy = null;
 
+                // 시야 범위 내의 적 실시간 감지
                 for(let e of enemies) {
                     const dist = Math.sqrt((e.currentX - ally.currentX)**2 + (e.currentY - ally.currentY)**2);
                     if(dist <= ally.range) { engagedEnemy = e; break; }
                 }
 
                 if(engagedEnemy) {
-                    if(currentTime - ally.lastAttack > (ally.type==='archer'?600:1000)) {
+                    // 공격 쿨타임 연산 및 화려한 백색 화력 이펙트 방출
+                    if(currentTime - ally.lastAttack > (ally.type==='archer'?550:950)) {
                         engagedEnemy.hp -= ally.damage; updateMonsterHp(engagedEnemy); ally.lastAttack = currentTime;
-                        spawnParticles(engagedEnemy.currentX, engagedEnemy.currentY, "#fff", 4, 0.5);
+                        spawnParticles(engagedEnemy.currentX, engagedEnemy.currentY, "#ffffff", 8, 1, 0.8);
                     }
                 }
 
-                if(!engagedEnemy || ally.type !== 'knight') {
+                // 🛑 [수정] 모든 타입의 아군 유닛은 시야 내에 적이 감지되면 전진을 즉시 멈춥니다.
+                if(!engagedEnemy) {
                     const prevPoint = roadPath[ally.pathIndex - 1];
                     if(prevPoint) {
                         const targetX = prevPoint.x + ally.offsetX; const targetY = prevPoint.y + ally.offsetY;
                         const dx = targetX - ally.currentX; const dy = targetY - ally.currentY; const d = Math.sqrt(dx*dx + dy*dy);
-                        if(d <= 1.4) { ally.currentX = targetX; ally.currentY = targetY; ally.pathIndex--; }
-                        else { ally.currentX += (dx / d) * 1.4; ally.currentY += (dy / d) * 1.4; }
+                        if(d <= 1.5) { ally.currentX = targetX; ally.currentY = targetY; ally.pathIndex--; }
+                        else { ally.currentX += (dx / d) * 1.5; ally.currentY += (dy / d) * 1.5; }
+                    } else {
+                        // 🚪 [요구사항 반영] 적 스폰 지점(끝)에 닿은 아군 병력은 자연스럽게 소멸(퇴근) 처리
+                        ally.element.remove();
+                        allies.splice(i, 1);
+                        continue;
                     }
                 }
 
@@ -501,11 +535,12 @@
                     });
                 }
 
+                // 아군 중 근접 유닛('knight')과 부딪히면 몬스터 측도 이동 차단 판정
                 let isBlocked = false;
                 for(let ally of allies) {
-                    if(ally.type === 'knight' && Math.sqrt((ally.currentX - e.currentX)**2 + (ally.currentY - e.currentY)**2) < 18) {
+                    if(ally.type === 'knight' && Math.sqrt((ally.currentX - e.currentX)**2 + (ally.currentY - e.currentY)**2) < 20) {
                         isBlocked = true;
-                        ally.hp -= 0.3; ally.hpFill.style.width = `${(ally.hp/ally.maxHp)*100}%`;
+                        ally.hp -= 0.35; ally.hpFill.style.width = `${(ally.hp/ally.maxHp)*100}%`;
                         if(ally.hp <= 0) { ally.element.remove(); allies.splice(allies.indexOf(ally), 1); }
                         break;
                     }
