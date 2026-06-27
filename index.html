@@ -2,252 +2,212 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>킹덤 가디언즈: 모바일 워</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>킹덤 가디언즈: 모바일 마스터</title>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-user-select: none; user-select: none;
+            -webkit-touch-callout: none;
+        }
         body {
-            margin: 0; padding: 0;
-            background-color: #0f0f13; color: #e0e0e6;
-            font-family: 'Malgun Gothic', sans-serif;
-            display: flex; flex-direction: column; align-items: center;
-            user-select: none; overflow: hidden;
-            -webkit-tap-highlight-color: transparent; /* 모바일 터치 하이라이트 제거 */
+            margin: 0; padding: 0; background-color: #0d0d11; color: #e2e2e9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            width: 100vw; height: 100vh; overflow: hidden;
+            touch-action: none; /* 브라우저 기본 스크롤/줌 방지 */
         }
 
-        /* 스마트폰 화면 비율에 맞춘 상단 헤더 */
-        #header-area {
-            width: 100%; max-width: 480px;
-            padding: 8px 0; text-align: center;
+        /* 모바일 상단 미니 전광판 */
+        #top-bar {
+            width: 100%; max-width: 480px; padding: 8px 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: #16161f; border-bottom: 2px solid #2d2d3a; z-index: 10;
         }
-        h2 { margin: 2px 0; font-size: 18px; color: #ffd700; }
-        #instruction { color: #8a8a93; font-size: 11px; }
+        .info-item { font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+        .gold { color: #ffd700; } .wave { color: #b088ff; }
 
-        /* 모바일용 뷰포트 (세로형 스마트폰 최적화 레이아웃) */
+        /* 모바일 전체 화면 뷰포트 (남은 세로 공간 모두 활용) */
         #viewport {
-            position: relative;
-            width: 100vw; height: 60vh;
-            max-width: 480px; max-height: 500px;
-            border: 3px solid #3a2f28; border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            overflow: hidden; background-color: #1a1e1a;
+            position: relative; flex: 1; width: 100%; max-width: 480px;
+            background-color: #141815; overflow: hidden;
         }
 
-        /* 드래그 가능한 거대 전장 (1200x1200) */
+        /* 터치 드래그용 월드 맵 (1000x1000 피셀 축소 최적화) */
         #game-world {
-            position: absolute;
-            width: 1200px; height: 1200px;
-            left: -350px; top: -350px; /* 초기 맵 중앙 배치 */
+            position: absolute; width: 1000px; height: 1000px;
+            left: -300px; top: -300px;
+            will-change: transform;
         }
-
-        canvas { position: absolute; top: 0; left: 0; z-index: 1; }
+        canvas { position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; }
         .game-element { position: absolute; z-index: 2; }
 
-        /* 메인 아군 성 */
+        /* 본성 기지 */
         #castle {
-            left: 1020px; top: 1020px;
-            width: 80px; height: 100px;
-            background: linear-gradient(135deg, #4b525d, #2c3037);
+            left: 820px; top: 820px; width: 80px; height: 100px;
+            background: linear-gradient(135deg, #444b54, #23272d);
             border: 2px solid #111; border-radius: 6px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        #castle-hp-bar { position: absolute; top: -18px; width: 80px; height: 8px; background-color: #441111; border: 1px solid #000; }
-        #castle-hp-fill { width: 100%; height: 100%; background: linear-gradient(to right, #ff3333, #33ff33); }
+        #castle-hp-bar { position: absolute; top: -14px; width: 70px; height: 6px; background: #311; border: 1px solid #000; }
+        #castle-hp-fill { width: 100%; height: 100%; background: #3f3; }
 
-        /* 모바일 터치에 최적화된 길 바로 옆 타워 슬롯 (크기를 키워 터치 미스 방지) */
+        /* 모바일 터치 전용 원형 대형 슬롯 (길 바로 옆) */
         .tower-slot {
-            position: absolute; width: 44px; height: 44px;
-            background-color: rgba(255, 215, 0, 0.05); border: 2px solid #9a7b56;
-            border-radius: 50%; cursor: pointer; z-index: 3;
-            display: flex; justify-content: center; align-items: center; font-size: 18px; color: #ffd700;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            position: absolute; width: 46px; height: 46px;
+            background-color: rgba(255, 215, 0, 0.08); border: 2px dashed #b89368;
+            border-radius: 50%; z-index: 3;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 16px; font-weight: bold; color: #ffd700;
         }
 
-        /* 타워 아이콘 디자인 */
+        /* 타워 아이콘 및 레벨 뱃지 */
         .tower {
             width: 100%; height: 100%; border: 2px solid #111; border-radius: 50%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            font-size: 10px; font-weight: bold; color: #fff; box-sizing: border-box;
+            font-size: 10px; font-weight: bold; color: #fff; position: relative;
         }
-        .tower.arrow { background: #2e4d36; }
-        .tower.magic { background: #362e4d; }
-        .tower.cannon { background: #4d2e2e; }
-        .tower.ice { background: #2e474d; }
-        .tower.poison { background: #434d2e; }
-        .tower.laser { background: #592352; }
-        .tower.buff { background: #615014; }
+        .tower.arrow { background: #2b4733; } .tower.magic { background: #352b47; } .tower.cannon { background: #472b2b; }
+        .tower-lv {
+            position: absolute; right: -4px; top: -4px; background: #ff9800;
+            color: #000; font-size: 9px; width: 14px; height: 14px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
 
-        /* 캐릭터 개체 스타일 */
+        /* 유닛 레이아웃 */
         .enemy-container, .ally-container {
             position: absolute; transform: translate(-50%, -100%);
             display: flex; flex-direction: column; align-items: center; justify-content: flex-end; z-index: 10;
         }
-        .hp-bar { width: 100%; height: 3px; background-color: #551111; border: 1px solid #000; margin-bottom: 2px; }
-        .hp-fill { width: 100%; height: 100%; background-color: #00ff33; }
-        
-        .enemy-body { background: radial-gradient(circle, #ff6666, #aa0000); border: 1.5px solid #111; border-radius: 50%; }
-        .enemy-body.boss { background: radial-gradient(circle, #ff33cc, #660044); border: 2px solid #ffd700; }
-
-        .ally-body { border: 1.5px solid #111; }
-        .ally-body.knight { width: 18px; height: 18px; background: #3498db; border-radius: 4px; }
-        .ally-body.archer { width: 16px; height: 16px; background: #2ecc71; border-radius: 50%; }
-        .ally-body.wizard { width: 16px; height: 16px; background: #9b59b6; border-radius: 4px; transform: rotate(45deg); }
+        .hp-bar { width: 100%; height: 3px; background-color: #411; border: 1px solid #000; margin-bottom: 2px; }
+        .hp-fill { width: 100%; height: 100%; background-color: #3f3; }
+        .enemy-body { background: radial-gradient(circle, #ff5555, #990000); border: 1px solid #111; border-radius: 50%; }
+        .enemy-body.boss { background: radial-gradient(circle, #ff33cc, #550033); border: 2px solid #ffd700; }
+        .ally-body { border: 1px solid #111; }
+        .ally-body.knight { width: 16px; height: 16px; background: #2980b9; border-radius: 3px; }
+        .ally-body.archer { width: 14px; height: 14px; background: #27ae60; border-radius: 50%; }
+        .ally-body.wizard { width: 14px; height: 14px; background: #8e44ad; transform: rotate(45deg); }
 
         .projectile { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); z-index: 9; pointer-events: none; }
-        .projectile.arrow { background-color: #fff; width: 5px; height: 5px; }
-        .projectile.magic { background-color: #bd88ff; width: 8px; height: 8px; }
-        .projectile.cannon { background-color: #ff5500; width: 12px; height: 12px; }
-        .projectile.ice { background-color: #88eeff; width: 7px; height: 7px; }
-        .projectile.poison { background-color: #88ff88; width: 7px; height: 7px; }
-        .projectile.laser { background-color: #ff33aa; width: 5px; height: 14px; }
+        .projectile.arrow { background-color: #fff; width: 4px; height: 4px; }
+        .projectile.magic { background-color: #c090ff; width: 7px; height: 7px; }
+        .projectile.cannon { background-color: #ff6600; width: 10px; height: 10px; }
 
-        /* 스마트폰 터치 전용 큼직한 선택 팝업 */
-        #build-menu, #spawn-menu {
-            display: none; position: absolute; background-color: rgba(15, 15, 20, 0.98);
-            border: 2px solid #ffd700; border-radius: 10px; padding: 5px; gap: 5px; z-index: 100;
-            flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-            width: 130px;
+        /* 하단 팝업 시트형 모달 UI (모바일용 편리한 배치) */
+        .mobile-modal {
+            display: none; position: absolute; bottom: 0; left: 0; width: 100%;
+            background-color: rgba(18, 18, 24, 0.96); border-top: 3px solid #ffd700;
+            border-radius: 16px 16px 0 0; padding: 16px; z-index: 100;
+            animation: slideUp 0.2s ease-out;
         }
-        .menu-btn {
-            background-color: #2a2a35; color: white; border: 1px solid #444;
-            padding: 8px 10px; font-size: 12px; cursor: pointer; border-radius: 6px;
-            display: flex; justify-content: space-between; font-weight: bold;
-        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
-        /* 모바일 하단 고정 컨트롤러 및 상태창 */
-        #ui-panel {
-            width: 100%; max-width: 480px; box-sizing: border-box;
-            background: linear-gradient(to bottom, #21212a, #111115);
-            padding: 10px 15px; display: flex; flex-direction: column; gap: 8px;
-            border: 3px solid #3a2f28; border-top: none; border-radius: 0 0 8px 8px;
+        .modal-title { font-size: 14px; font-weight: bold; color: #ffd700; margin-bottom: 10px; text-align: center; }
+        .grid-menu { display: grid; grid-template-columns: repeat(3, 110px); gap: 8px; justify-content: center; }
+        
+        .menu-btn {
+            background-color: #252535; color: white; border: 1px solid #444;
+            padding: 10px 6px; font-size: 11px; font-weight: bold; cursor: pointer; border-radius: 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
         }
-        .stats-row { display: flex; justify-content: space-between; width: 100%; }
-        .stats-box { display: flex; gap: 15px; font-size: 15px; font-weight: bold; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 6px; width: 100%; justify-content: space-around; }
-        .control-row { display: flex; width: 100%; gap: 6px; }
-        .btn {
-            flex: 1; background: linear-gradient(to bottom, #4caf50, #2e7d32); color: white; border: 1px solid #111;
-            padding: 10px 0; font-size: 12px; font-weight: bold; border-radius: 6px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 2px 0 #1b5e20;
-        }
-        .btn span { font-size: 9px; color: #ccc; margin-top: 1px; }
-        .btn:disabled { background: #333 !important; color: #666; box-shadow: none; }
-        #btn-start { background: linear-gradient(to bottom, #ff9800, #f57c00); box-shadow: 0 2px 0 #e65100; }
-        #btn-ally-menu { background: linear-gradient(to bottom, #2196f3, #0b7dda); box-shadow: 0 2px 0 #0d47a1; }
+        .menu-btn span { font-size: 10px; color: #ffb74d; }
+        .menu-desc { font-size: 9px; color: #aaa; text-align: center; font-weight: normal; margin-top: 2px; }
 
-        #game-over-screen {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; flex-direction: column; z-index: 200;
+        /* 모바일 대형 하단 조작 바 */
+        #control-panel {
+            width: 100%; max-width: 480px; background-color: #16161f;
+            padding: 12px; display: flex; gap: 8px; border-top: 2px solid #2d2d3a; z-index: 10;
+        }
+        .action-btn {
+            flex: 1; background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white; border: none; padding: 12px 0; font-size: 13px; font-weight: bold;
+            border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .action-btn span { font-size: 10px; color: #d0e0ff; margin-top: 2px; }
+        #btn-wave-start { background: linear-gradient(to bottom, #e67e22, #d35400); }
+        .action-btn:disabled { background: #2c2c35 !important; color: #666; }
+        .action-btn:disabled span { color: #555; }
+
+        #game-over {
+            display: none; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.9); z-index: 200; flex-direction: column; justify-content: center; align-items: center;
         }
     </style>
 </head>
 <body>
 
-    <div id="header-area">
-        <h2>🏰 킹덤 가디언즈: 모바일</h2>
-        <div id="instruction">📱 화면을 드래그하여 지도 이동 / 슬롯을 터치하여 타워 건설</div>
+    <div id="top-bar">
+        <div class="info-item gold">💰 <span id="txt-gold">400</span></div>
+        <div class="info-item">❤️ <span id="txt-hp">400/400</span></div>
+        <div class="info-item wave">🌊 Wave <span id="txt-wave">1</span></div>
     </div>
     
     <div id="viewport">
         <div id="game-world">
-            <canvas id="bg-canvas" width="1200" height="1200"></canvas>
+            <canvas id="bg-canvas" width="1000" height="1000"></canvas>
 
             <div id="castle" class="game-element">
                 <div id="castle-hp-bar"><div id="castle-hp-fill"></div></div>
-                <span style="font-weight: bold; font-size: 11px; color: #ccc;">CASTLE</span>
-                <span id="castle-lv-txt" style="font-size: 10px; color: #ffd700; margin-top: 2px;">Lv.1</span>
+                <span style="font-weight: bold; font-size: 11px; color: #ccc;">성문</span>
             </div>
             
-            <div id="slot-0" class="tower-slot game-element" style="left: 100px; top: 95px;" onclick="openBuildMenu(event, 0)">+</div>
-            <div id="slot-1" class="tower-slot game-element" style="left: 250px; top: 95px;" onclick="openBuildMenu(event, 1)">+</div>
-            
-            <div id="slot-2" class="tower-slot game-element" style="left: 355px; top: 220px;" onclick="openBuildMenu(event, 2)">+</div>
-            <div id="slot-3" class="tower-slot game-element" style="left: 355px; top: 380px;" onclick="openBuildMenu(event, 3)">+</div>
-            
-            <div id="slot-4" class="tower-slot game-element" style="left: 200px; top: 555px;" onclick="openBuildMenu(event, 4)">+</div>
-            
-            <div id="slot-5" class="tower-slot game-element" style="left: 45px; top: 720px;" onclick="openBuildMenu(event, 5)">+</div>
-            
-            <div id="slot-6" class="tower-slot game-element" style="left: 250px; top: 845px;" onclick="openBuildMenu(event, 6)">+</div>
-            <div id="slot-7" class="tower-slot game-element" style="left: 480px; top: 845px;" onclick="openBuildMenu(event, 7)">+</div>
-            
-            <div id="slot-8" class="tower-slot game-element" style="left: 655px; top: 680px;" onclick="openBuildMenu(event, 8)">+</div>
-            <div id="slot-9" class="tower-slot game-element" style="left: 655px; top: 480px;" onclick="openBuildMenu(event, 9)">+</div>
-            
-            <div id="slot-10" class="tower-slot game-element" style="left: 800px; top: 245px;" onclick="openBuildMenu(event, 10)">+</div>
-            <div id="slot-11" class="tower-slot game-element" style="left: 1005px; top: 125px;" onclick="openBuildMenu(event, 11)">+</div>
-            
-            <div id="slot-12" class="tower-slot game-element" style="left: 955px; top: 650px;" onclick="openBuildMenu(event, 12)">+</div>
-            <div id="slot-13" class="tower-slot game-element" style="left: 955px; top: 850px;" onclick="openBuildMenu(event, 13)">+</div>
+            <div id="slot-0" class="tower-slot game-element" style="left: 100px; top: 75px;">+</div>
+            <div id="slot-1" class="tower-slot game-element" style="left: 230px; top: 75px;">+</div>
+            <div id="slot-2" class="tower-slot game-element" style="left: 355px; top: 180px;">+</div>
+            <div id="slot-3" class="tower-slot game-element" style="left: 195px; top: 355px;">+</div>
+            <div id="slot-4" class="tower-slot game-element" style="left: 45px; top: 480px;">+</div>
+            <div id="slot-5" class="tower-slot game-element" style="left: 250px; top: 655px;">+</div>
+            <div id="slot-6" class="tower-slot game-element" style="left: 455px; top: 655px;">+</div>
+            <div id="slot-7" class="tower-slot game-element" style="left: 655px; top: 500px;">+</div>
+            <div id="slot-8" class="tower-slot game-element" style="left: 655px; top: 300px;">+</div>
+            <div id="slot-9" class="tower-slot game-element" style="left: 855px; top: 650px;">+</div>
 
-            <div id="build-menu" class="game-element">
-                <button class="menu-btn" onclick="buildTower('arrow')">🏹 화살 <span>100G</span></button>
-                <button class="menu-btn" onclick="buildTower('magic')">🔮 마법 <span>150G</span></button>
-                <button class="menu-btn" onclick="buildTower('cannon')">💣 캐논 <span>200G</span></button>
-                <button class="menu-btn" onclick="buildTower('ice')">❄️ 얼음 <span>120G</span></button>
-                <button class="menu-btn" onclick="buildTower('poison')">🧪 독형 <span>140G</span></button>
-                <button class="menu-btn" onclick="buildTower('laser')">⚡ 레이저 <span>250G</span></button>
-                <button class="menu-btn" onclick="buildTower('buff')">👑 신단 <span>300G</span></button>
+            <div id="modal-build" class="mobile-modal">
+                <div class="modal-title">🔨 타워 건설 및 업그레이드</div>
+                <div class="grid-menu" id="build-options">
+                    </div>
             </div>
 
-            <div id="spawn-menu" class="game-element">
-                <button class="menu-btn" onclick="spawnAlly('knight')">🛡️ 기사 <span>50G</span></button>
-                <button class="menu-btn" onclick="spawnAlly('archer')">🏹 궁수 <span>70G</span></button>
-                <button class="menu-btn" onclick="spawnAlly('wizard')">🔮 법사 <span>100G</span></button>
+            <div id="modal-spawn" class="mobile-modal">
+                <div class="modal-title">⚔️ 군사 소환 부대 지정</div>
+                <div class="grid-menu">
+                    <button class="menu-btn" onclick="spawnAlly('knight')">🛡️ 기사 <span>50G</span><div class="menu-desc">적을 길막함</div></button>
+                    <button class="menu-btn" onclick="spawnAlly('archer')">🏹 궁수 <span>70G</span><div class="menu-desc">원거리 사격</div></button>
+                    <button class="menu-btn" onclick="spawnAlly('wizard')">🔮 법사 <span>100G</span><div class="menu-desc">강력한 한방</div></button>
+                </div>
             </div>
         </div>
 
-        <div id="game-over-screen">
-            <h2 style="color: #ff3333; font-size: 28px; margin: 0;">GAME OVER</h2>
-            <p id="final-wave" style="font-size: 15px; color: #aaa; margin: 10px 0 20px 0;">최종 방어: Wave 1</p>
-            <button class="btn" style="padding: 8px 30px; flex:none; width:150px;" onclick="location.reload()">다시 시작</button>
+        <div id="game-over">
+            <h2 style="color: #ff3333; font-size: 32px; margin: 0;">🏰 함락됨</h2>
+            <p id="txt-final-wave" style="font-size: 16px; color: #bbb; margin: 10px 0 20px 0;">최종 방어: Wave 1</p>
+            <button class="action-btn" style="width: 160px; flex: none;" onclick="location.reload()">재도전</button>
         </div>
     </div>
 
-    <div id="ui-panel">
-        <div class="stats-row">
-            <div class="stats-box">
-                <div>💰 <span id="gold-txt" style="color:#ffd700;">450</span></div>
-                <div>❤️ <span id="hp-txt">400/400</span></div>
-                <div>🌊 <span id="wave-txt" style="color:#bb88ff;">1</span></div>
-            </div>
-        </div>
-        
-        <div class="control-row">
-            <button id="btn-ally-menu" class="btn" onclick="openAllyMenu(event)">
-                ⚔️ 군사 출격
-                <span>부대 고용</span>
-            </button>
-            <button id="btn-up-castle" class="btn" onclick="upgradeCastle()">
-                🏰 성벽 보강
-                <span id="cost-castle">120G</span>
-            </button>
-            <button id="btn-start" class="btn" onclick="startWave()">
-                🔥 웨이브 시작
-            </button>
-        </div>
+    <div id="control-panel">
+        <button id="btn-open-spawn" class="action-btn">⚔️ 군사 소환<span>용병단 배치</span></button>
+        <button id="btn-upgrade-castle" class="action-btn" onclick="upgradeCastle()">🏰 성벽 보강<span id="lbl-castle-cost">120G</span></button>
+        <button id="btn-wave-start" class="action-btn" onclick="startWave()">🔥 웨이브 시작</button>
     </div>
 
     <script>
-        // --- 1. 길 바로 옆 슬롯 시스템 구축을 위한 격자형 로드 맵 패스 ---
+        // --- 모바일 경로 좌표계 (1000x1000 지도용) ---
         const roadPath = [
-            {x: 0, y: 150}, {x: 300, y: 150}, {x: 300, y: 500}, {x: 100, y: 500},
-            {x: 100, y: 800}, {x: 600, y: 800}, {x: 600, y: 400}, {x: 450, y: 400},
-            {x: 450, y: 50}, {x: 950, y: 50}, {x: 950, y: 300}, {x: 750, y: 300},
-            {x: 750, y: 600}, {x: 1020, y: 600}, {x: 1020, y: 1050}
+            {x: 0, y: 130}, {x: 300, y: 130}, {x: 300, y: 410}, {x: 100, y: 410},
+            {x: 100, y: 600}, {x: 600, y: 600}, {x: 600, y: 240}, {x: 800, y: 240},
+            {x: 800, y: 870}, {x: 820, y: 870}
         ];
 
         const gameState = {
-            gold: 450, wave: 1, isWaveActive: false,
+            gold: 400, wave: 1, isWaveActive: false,
             castleHp: 400, castleMaxHp: 400, castleLevel: 1, castleUpCost: 120,
-            towers: Array(14).fill(null), selectedSlotIndex: null,
+            towers: Array(10).fill(null), selectedSlotIdx: null,
+            // 🌟 타워 타입별 레벨 달성 시 해금되는 추가 능력치 설계 정의
             towerSpecs: {
-                arrow:  { name: "화살", cost: 100, range: 120, cooldown: 450,  damage: 13 },
-                magic:  { name: "마법", cost: 150, range: 150, cooldown: 1100, damage: 45 },
-                cannon: { name: "캐논", cost: 200, range: 100, cooldown: 1700, damage: 70, splash: 55 },
-                ice:    { name: "얼음", cost: 120, range: 110, cooldown: 800,  damage: 11, effect: 'slow' },
-                poison: { name: "독",   cost: 140, range: 110, cooldown: 900,  damage: 7,  effect: 'poison' },
-                laser:  { name: "레이저", cost: 250, range: 130, cooldown: 200,  damage: 8 },
-                buff:   { name: "신단", cost: 300, range: 140, cooldown: 99999, damage: 0, effect: 'buff' }
+                arrow:  { name: "화살", cost: 100, range: 110, cooldown: 450,  damage: 12, bonuses: { 2: "치명타 25%", 3: "사거리 +30" } },
+                magic:  { name: "마법", cost: 150, range: 130, cooldown: 1100, damage: 45, bonuses: { 2: "적 둔화 30%", 3: "위력 대폭발" } },
+                cannon: { name: "캐논", cost: 200, range: 90,  cooldown: 1800, damage: 75, splash: 50, bonuses: { 2: "범위 넓힘", 3: "기절 유발" } }
             }
         };
 
@@ -257,133 +217,156 @@
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
 
-        // --- 2. 모바일 터치 및 마우스 하이브리드 드래그 제어 장치 ---
+        // --- 1. 모바일 100% 대응 완벽 터치 스크롤 드래그 엔진 ---
         let isDragging = false; let startX, startY;
-
-        const startDrag = (clientX, clientY) => {
-            isDragging = true;
-            startX = clientX - gameWorld.offsetLeft;
-            startY = clientY - gameWorld.offsetTop;
-        };
-
-        const moveDrag = (clientX, clientY) => {
+        const onStart = (cX, cY) => { isDragging = true; startX = cX - gameWorld.offsetLeft; startY = cY - gameWorld.offsetTop; };
+        const onMove = (cX, cY) => {
             if (!isDragging) return;
-            let left = clientX - startX; let top = clientY - startY;
-            left = Math.min(0, Math.max(left, viewport.clientWidth - 1200));
-            top = Math.min(0, Math.max(top, viewport.clientHeight - 1200));
+            let left = cX - startX; let top = cY - startY;
+            left = Math.min(0, Math.max(left, viewport.clientWidth - 1000));
+            top = Math.min(0, Math.max(top, viewport.clientHeight - 1000));
             gameWorld.style.left = `${left}px`; gameWorld.style.top = `${top}px`;
         };
-
-        // 마우스 이벤트 바인딩
-        viewport.addEventListener('mousedown', (e) => {
-            if(e.target.closest('button') || e.target.closest('.tower-slot')) return;
-            startDrag(e.clientX, e.clientY);
-        });
-        window.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+        viewport.addEventListener('mousedown', (e) => { if(e.target.closest('.tower-slot') || e.target.closest('button')) return; onStart(e.clientX, e.clientY); });
+        window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
         window.addEventListener('mouseup', () => isDragging = false);
-
-        // 모바일 터치(Touch) 이벤트 바인딩 추가
-        viewport.addEventListener('touchstart', (e) => {
-            if(e.target.closest('button') || e.target.closest('.tower-slot')) return;
-            const touch = e.touches[0];
-            startDrag(touch.clientX, touch.clientY);
-        });
-        viewport.addEventListener('touchmove', (e) => {
-            const touch = e.touches[0];
-            moveDrag(touch.clientX, touch.clientY);
-        });
+        viewport.addEventListener('touchstart', (e) => { if(e.target.closest('.tower-slot') || e.target.closest('button')) return; onStart(e.touches[0].clientX, e.touches[0].clientY); });
+        viewport.addEventListener('touchmove', (e) => onMove(e.touches[0].clientX, e.touches[0].clientY));
         viewport.addEventListener('touchend', () => isDragging = false);
-
 
         function drawBackground() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#32251a'; ctx.lineWidth = 36; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#2d2218'; ctx.lineWidth = 34; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             ctx.beginPath(); ctx.moveTo(roadPath[0].x, roadPath[0].y);
             for(let i = 1; i < roadPath.length; i++) ctx.lineTo(roadPath[i].x, roadPath[i].y);
             ctx.stroke();
-            ctx.strokeStyle = '#5a4533'; ctx.lineWidth = 26; ctx.stroke();
+            ctx.strokeStyle = '#524030'; ctx.lineWidth = 24; ctx.stroke();
         }
 
         function updateUI() {
-            document.getElementById('gold-txt').innerText = gameState.gold;
-            document.getElementById('hp-txt').innerText = `${Math.max(0, Math.floor(gameState.castleHp))}/${gameState.castleMaxHp}`;
-            document.getElementById('wave-txt').innerText = gameState.wave;
-            document.getElementById('cost-castle').innerText = `${gameState.castleUpCost}G`;
-            document.getElementById('castle-lv-txt').innerText = `Lv.${gameState.castleLevel}`;
-
-            document.getElementById('btn-up-castle').disabled = gameState.gold < gameState.castleUpCost || gameState.isWaveActive;
-            document.getElementById('btn-start').disabled = gameState.isWaveActive;
+            document.getElementById('txt-gold').innerText = gameState.gold;
+            document.getElementById('txt-hp').innerText = `${Math.max(0, Math.floor(gameState.castleHp))}/${gameState.castleMaxHp}`;
+            document.getElementById('txt-wave').innerText = gameState.wave;
+            document.getElementById('lbl-castle-cost').innerText = `${gameState.castleUpCost}G`;
+            document.getElementById('btn-upgrade-castle').disabled = gameState.gold < gameState.castleUpCost || gameState.isWaveActive;
+            document.getElementById('btn-wave-start').disabled = gameState.isWaveActive;
             document.getElementById('castle-hp-fill').style.width = `${(gameState.castleHp / gameState.castleMaxHp) * 100}%`;
 
-            for(let i = 0; i < 14; i++) {
-                const slotEl = document.getElementById(`slot-${i}`);
-                if(!slotEl) continue;
+            for(let i = 0; i < 10; i++) {
+                const slot = document.getElementById(`slot-${i}`);
                 const t = gameState.towers[i];
-                if(t === null) slotEl.innerHTML = "+";
-                else slotEl.innerHTML = `<div class="tower ${t.type}">${t.name}</div>`;
+                if(!t) slot.innerHTML = "+";
+                else slot.innerHTML = `<div class="tower ${t.type}">${t.name}<div class="tower-lv">${t.level}</div></div>`;
             }
         }
 
-        function openBuildMenu(e, slotIndex) {
-            e.stopPropagation(); if(gameState.isWaveActive) return;
-            if(gameState.towers[slotIndex] !== null) { upgradeExistingTower(slotIndex); return; }
-            gameState.selectedSlotIndex = slotIndex;
-            const menu = document.getElementById('build-menu');
-            menu.style.display = 'flex'; menu.style.left = `${e.pageX - gameWorld.getBoundingClientRect().left - 50}px`; menu.style.top = `${e.pageY - gameWorld.getBoundingClientRect().top - 120}px`;
-            document.getElementById('spawn-menu').style.display = 'none';
-        }
+        // --- 2. 동적 해금 능력을 포함한 타워 매니지먼트 시스템 ---
+        document.querySelectorAll('.tower-slot').forEach((slot, idx) => {
+            slot.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if(gameState.isWaveActive) return;
+                gameState.selectedSlotIdx = idx;
+                
+                const t = gameState.towers[idx];
+                const menuOptions = document.getElementById('build-options');
+                menuOptions.innerHTML = '';
 
-        function openAllyMenu(e) {
-            e.stopPropagation(); const menu = document.getElementById('spawn-menu');
-            menu.style.display = 'flex'; menu.style.left = "930px"; menu.style.top = "930px";
-            document.getElementById('build-menu').style.display = 'none';
-        }
-
-        function closeAllMenus() {
-            document.getElementById('build-menu').style.display = 'none';
-            document.getElementById('spawn-menu').style.display = 'none';
-        }
-        document.body.addEventListener('click', closeAllMenus);
-        viewport.addEventListener('touchstart', closeAllMenus);
+                if(!t) {
+                    // 미건설 상태 -> 구매 옵션 활성화
+                    for(let key in gameState.towerSpecs) {
+                        const spec = gameState.towerSpecs[key];
+                        menuOptions.innerHTML += `
+                            <button class="menu-btn" onclick="buildTower('${key}')">
+                                ${spec.name} <span>${spec.cost}G</span>
+                                <div class="menu-desc">Lv.2: ${spec.bonuses[2]}<br>Lv.3: ${spec.bonuses[3]}</div>
+                            </button>`;
+                    }
+                } else {
+                    // 기건설 상태 -> 업그레이드 옵션 활성화
+                    const nextCost = t.level * 100;
+                    const bonusInfo = gameState.towerSpecs[t.type].bonuses[t.level + 1] || "스펙 최대치 달성";
+                    menuOptions.innerHTML = `
+                        <button class="menu-btn" style="grid-column: span 3; width:100%;" onclick="upgradeTower(${idx})">
+                            🔼 ${t.name} 강화 진행 <span>${nextCost}G</span>
+                            <div class="menu-desc" style="color:#2ecc71; font-size:11px; margin-top:4px;">다음 레벨 효과 해금 예고: ${bonusInfo}</div>
+                        </button>`;
+                }
+                
+                document.getElementById('modal-build').style.display = 'block';
+                document.getElementById('modal-spawn').style.display = 'none';
+            });
+        });
 
         function buildTower(type) {
-            const idx = gameState.selectedSlotIndex; const spec = gameState.towerSpecs[type];
-            if(idx !== null && gameState.gold >= spec.cost) {
-                gameState.gold -= spec.cost; const slotEl = document.getElementById(`slot-${idx}`);
+            const idx = gameState.selectedSlotIdx; const spec = gameState.towerSpecs[type];
+            if(gameState.gold >= spec.cost) {
+                gameState.gold -= spec.cost;
+                const slotEl = document.getElementById(`slot-${idx}`);
                 gameState.towers[idx] = {
-                    type: type, name: spec.name, x: slotEl.offsetLeft + 22, y: slotEl.offsetTop + 22,
+                    type: type, name: spec.name, x: slotEl.offsetLeft + 23, y: slotEl.offsetTop + 23,
                     level: 1, damage: spec.damage, range: spec.range, cooldown: spec.cooldown,
-                    splash: spec.splash || 0, effect: spec.effect || null, lastShot: 0
+                    splash: spec.splash || 0, critChance: 0, slowEff: false, stunEff: false, lastShot: 0
                 };
                 updateUI();
             }
+            closeAllModals();
         }
 
-        function upgradeExistingTower(idx) {
-            const t = gameState.towers[idx]; const upCost = t.level * 90;
-            if(gameState.gold >= upCost) {
-                gameState.gold -= upCost; t.level++; t.damage = Math.floor(t.damage * 1.5); t.range += 8; updateUI();
+        // 🌟 강화 단계별 복합 특수 조건부 개방 처리 구조
+        function upgradeTower(idx) {
+            const t = gameState.towers[idx]; const cost = t.level * 100;
+            if(gameState.gold >= cost && t.level < 3) {
+                gameState.gold -= cost; t.level++;
+                t.damage = Math.floor(t.damage * 1.6);
+                
+                // 레벨업에 따른 고유 특수 기능 주입 분기점
+                if(t.type === 'arrow') {
+                    if(t.level === 2) t.critChance = 0.25; // 25% 크리티컬 해금
+                    if(t.level === 3) t.range += 30;       // 사거리 추가 연장
+                }
+                if(t.type === 'magic') {
+                    if(t.level === 2) t.slowEff = true;    // 타격 시 적 이속 제어기 주입
+                    if(t.level === 3) t.damage *= 1.4;     // 마법 대폭발 위력 계수 강화
+                }
+                if(t.type === 'cannon') {
+                    if(t.level === 2) t.splash += 25;      // 광역 폭발 범위 확장
+                    if(t.level === 3) t.stunEff = true;    // 기절(스턴) CC 기능 탑재
+                }
+                updateUI();
             }
+            closeAllModals();
         }
+
+        document.getElementById('btn-open-spawn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('modal-spawn').style.display = 'block';
+            document.getElementById('modal-build').style.display = 'none';
+        });
+
+        function closeAllModals() {
+            document.getElementById('modal-build').style.display = 'none';
+            document.getElementById('modal-spawn').style.display = 'none';
+        }
+        viewport.addEventListener('touchstart', closeAllModals);
+        document.body.addEventListener('click', closeAllModals);
 
         function upgradeCastle() {
             if(gameState.gold >= gameState.castleUpCost && !gameState.isWaveActive) {
                 gameState.gold -= gameState.castleUpCost; gameState.castleLevel++;
-                gameState.castleMaxHp += 120; gameState.castleHp = gameState.castleMaxHp;
+                gameState.castleMaxHp += 100; gameState.castleHp = gameState.castleMaxHp;
                 gameState.castleUpCost = Math.floor(gameState.castleUpCost * 1.5); updateUI();
             }
         }
 
         function spawnAlly(type) {
-            let cost = 50; let hp = 70; let speed = 1.3; let range = 25; let damage = 15; let cd = 900;
-            if(type === 'archer') { cost = 70; hp = 45; speed = 1.5; range = 120; damage = 10; cd = 600; }
-            if(type === 'wizard') { cost = 100; hp = 50; speed = 1.1; range = 95; damage = 24; cd = 1200; }
-
+            let cost = 50; let hp = 65; let speed = 1.2; let range = 22; let damage = 14; let cd = 900;
+            if(type === 'archer') { cost = 70; hp = 40; speed = 1.4; range = 110; damage = 9; cd = 600; }
+            if(type === 'wizard') { cost = 100; hp = 45; speed = 1.0; range = 90; damage = 22; cd = 1300; }
             if(gameState.gold < cost) return;
             gameState.gold -= cost; updateUI();
 
             const container = document.createElement('div'); container.className = 'ally-container';
-            container.style.width = '20px'; container.style.height = '30px';
+            container.style.width = '18px'; container.style.height = '28px';
             const hpBar = document.createElement('div'); hpBar.className = 'hp-bar';
             const hpFill = document.createElement('div'); hpFill.className = 'hp-fill';
             hpBar.appendChild(hpFill);
@@ -400,25 +383,23 @@
         function startWave() {
             if(gameState.isWaveActive) return; gameState.isWaveActive = true; updateUI();
             const isBossWave = (gameState.wave % 5 === 0);
-            const spawnCount = isBossWave ? 1 : 10 + gameState.wave * 3;
+            const spawnCount = isBossWave ? 1 : 8 + gameState.wave * 2;
 
             let spawned = 0;
             const spawner = setInterval(() => {
                 if(spawned >= spawnCount) { clearInterval(spawner); return; }
-                
-                let type = 'normal'; let hp = 60 + gameState.wave * 25; let size = 18;
-                let speed = 1.2 + (gameState.wave * 0.04); let gold = 15 + gameState.wave * 3;
+                let type = 'normal'; let hp = 50 + gameState.wave * 22; let size = 18;
+                let speed = 1.2 + (gameState.wave * 0.03); let gold = 15 + gameState.wave * 2;
 
                 if (isBossWave) {
-                    type = 'boss'; hp = (120 + gameState.wave * 50) * 6; size = 34; speed = 0.6; gold = 150 + gameState.wave * 30;
+                    type = 'boss'; hp = (100 + gameState.wave * 40) * 5; size = 32; speed = 0.6; gold = 120 + gameState.wave * 20;
                 } else if (Math.random() < 0.25) {
-                    type = 'fast'; hp = Math.floor(hp * 0.5); size = 14; speed *= 1.5;
+                    type = 'fast'; hp = Math.floor(hp * 0.5); size = 14; speed *= 1.45;
                 } else if (Math.random() < 0.2) {
-                    type = 'heavy'; hp = Math.floor(hp * 2.2); size = 24; speed *= 0.65; gold *= 2;
+                    type = 'heavy'; hp = Math.floor(hp * 2.0); size = 22; speed *= 0.65; gold *= 1.8;
                 }
-
                 spawnEnemy(type, hp, speed, size, gold); spawned++;
-            }, isBossWave ? 1000 : 700);
+            }, 800);
         }
 
         function spawnEnemy(type, hp, speed, size, gold) {
@@ -433,58 +414,48 @@
 
             enemies.push({
                 element: container, hpFill: hpFill, type: type, hp: hp, maxHp: hp, gold: gold, baseSpeed: speed, speed: speed,
-                pathIndex: 0, currentX: roadPath[0].x, currentY: roadPath[0].y, slowDuration: 0, poisonDuration: 0, poisonDamage: 0
+                pathIndex: 0, currentX: roadPath[0].x, currentY: roadPath[0].y, slowDuration: 0, stunDuration:0
             });
         }
 
         function handleTowerFire(currentTime) {
-            const buffTowers = gameState.towers.filter(t => t && t.type === 'buff');
-
             for(let tower of gameState.towers) {
-                if(!tower || tower.type === 'buff') continue;
-                let isBuffed = false;
-                for(let bt of buffTowers) {
-                    if(Math.sqrt(Math.pow(bt.x - tower.x, 2) + Math.pow(bt.y - tower.y, 2)) <= bt.range) { isBuffed = true; break; }
-                }
-                const currentDamage = isBuffed ? Math.floor(tower.damage * 1.5) : tower.damage;
-                if(currentTime - tower.lastShot < tower.cooldown) continue;
-
+                if(!tower || currentTime - tower.lastShot < tower.cooldown) continue;
                 let target = null;
                 for(let enemy of enemies) {
                     if(Math.sqrt(Math.pow(enemy.currentX - tower.x, 2) + Math.pow(enemy.currentY - tower.y, 2)) <= tower.range) { target = enemy; break; }
                 }
                 if(target) {
-                    fireProjectile(tower, target, currentDamage);
+                    // 크리티컬 팩터 연산 적용 (화살 타워 특화)
+                    let finalDmg = tower.damage;
+                    if(tower.critChance > 0 && Math.random() < tower.critChance) { finalDmg *= 2; }
+
+                    const el = document.createElement('div'); el.className = `projectile ${tower.type}`;
+                    el.style.left = `${tower.x}px`; el.style.top = `${tower.y}px`; gameWorld.appendChild(el);
+                    projectiles.push({
+                        element: el, type: tower.type, x: tower.x, y: tower.y, target: target,
+                        damage: finalDmg, splash: tower.splash, slowEff: tower.slowEff, stunEff: tower.stunEff, speed: 9
+                    });
                     tower.lastShot = currentTime;
                 }
             }
         }
 
-        function fireProjectile(tower, target, dmg) {
-            const el = document.createElement('div'); el.className = `projectile ${tower.type}`;
-            el.style.left = `${tower.x}px`; el.style.top = `${tower.y}px`; gameWorld.appendChild(el);
-            projectiles.push({
-                element: el, type: tower.type, x: tower.x, y: tower.y, target: target,
-                damage: dmg, splash: tower.splash, effect: tower.effect, speed: tower.type === 'laser' ? 14 : 8
-            });
-        }
-
         function mainLoop(currentTime) {
             drawBackground();
 
+            // 아군 동역학 제어 루프
             for(let i = allies.length - 1; i >= 0; i--) {
                 const ally = allies[i]; let targetEnemy = null;
                 for(let enemy of enemies) {
                     if(Math.sqrt(Math.pow(enemy.currentX - ally.currentX, 2) + Math.pow(enemy.currentY - ally.currentY, 2)) <= ally.range) { targetEnemy = enemy; break; }
                 }
-                if(targetEnemy) {
-                    if(currentTime - ally.lastAttack > ally.cooldown) {
-                        targetEnemy.hp -= ally.damage; updateMonsterHp(targetEnemy); ally.lastAttack = currentTime;
-                        if(ally.type !== 'knight') {
-                            const pEl = document.createElement('div'); pEl.className = `projectile ${ally.type === 'archer' ? 'arrow' : 'magic'}`;
-                            pEl.style.left = `${ally.currentX}px`; pEl.style.top = `${ally.currentY}px`; gameWorld.appendChild(pEl);
-                            setTimeout(() => pEl.remove(), 120);
-                        }
+                if(targetEnemy && currentTime - ally.lastAttack > ally.cooldown) {
+                    targetEnemy.hp -= ally.damage; updateMonsterHp(targetEnemy); ally.lastAttack = currentTime;
+                    if(ally.type !== 'knight') {
+                        const pEl = document.createElement('div'); pEl.className = `projectile ${ally.type === 'archer' ? 'arrow' : 'magic'}`;
+                        pEl.style.left = `${ally.currentX}px`; pEl.style.top = `${ally.currentY}px`; gameWorld.appendChild(pEl);
+                        setTimeout(() => pEl.remove(), 100);
                     }
                 }
                 if(!targetEnemy || ally.type !== 'knight') {
@@ -498,14 +469,15 @@
                 ally.element.style.left = `${ally.currentX}px`; ally.element.style.top = `${ally.currentY}px`;
             }
 
+            // 적 몬스터 움직임 및 상태이상 피드백
             for(let i = enemies.length - 1; i >= 0; i--) {
                 const enemy = enemies[i];
-                if(enemy.slowDuration > 0) { enemy.slowDuration -= 16; enemy.speed = enemy.baseSpeed * 0.45; } else { enemy.speed = enemy.baseSpeed; }
-                if(enemy.poisonDuration > 0) { enemy.poisonDuration -= 16; enemy.hp -= enemy.poisonDamage; updateMonsterHp(enemy); if(enemy.hp <= 0) continue; }
+                if(enemy.stunDuration > 0) { enemy.stunDuration -= 16; continue; } // 기절 시 행동 스킵
+                if(enemy.slowDuration > 0) { enemy.slowDuration -= 16; enemy.speed = enemy.baseSpeed * 0.6; } else { enemy.speed = enemy.baseSpeed; }
 
                 let blocked = false;
                 for(let ally of allies) {
-                    if(ally.type === 'knight' && Math.abs(ally.currentX - enemy.currentX) < 18 && Math.abs(ally.currentY - enemy.currentY) < 18) {
+                    if(ally.type === 'knight' && Math.abs(ally.currentX - enemy.currentX) < 16 && Math.abs(ally.currentY - enemy.currentY) < 16) {
                         blocked = true;
                         if(Math.random() < 0.015) {
                             ally.hp -= (enemy.type === 'boss' ? 10 : 3);
@@ -519,17 +491,19 @@
 
                 const nextPoint = roadPath[enemy.pathIndex + 1];
                 if(!nextPoint) {
-                    gameState.castleHp -= (enemy.type === 'boss' ? 200 : 25 + gameState.wave * 4);
+                    gameState.castleHp -= (enemy.type === 'boss' ? 150 : 20);
                     enemy.element.remove(); enemies.splice(i, 1); updateUI();
                     if(gameState.castleHp <= 0) { endGame(); return; } continue;
                 }
-
                 const dx = nextPoint.x - enemy.currentX; const dy = nextPoint.y - enemy.currentY; const dist = Math.sqrt(dx*dx + dy*dy);
                 if(dist <= enemy.speed) { enemy.currentX = nextPoint.x; enemy.currentY = nextPoint.y; enemy.pathIndex++; }
                 else { enemy.currentX += (dx / dist) * enemy.speed; enemy.currentY += (dy / dist) * enemy.speed; }
                 enemy.element.style.left = `${enemy.currentX}px`; enemy.element.style.top = `${enemy.currentY}px`;
             }
 
+            handleTowerFire(currentTime);
+
+            // 투사체 정밀 비행 제어
             for(let i = projectiles.length - 1; i >= 0; i--) {
                 const p = projectiles[i];
                 if(!enemies.includes(p.target)) { p.element.remove(); projectiles.splice(i, 1); continue; }
@@ -539,11 +513,11 @@
                     if(p.splash > 0) {
                         for(let targetEnv of enemies) {
                             if(Math.sqrt(Math.pow(targetEnv.currentX - p.x, 2) + Math.pow(targetEnv.currentY - p.y, 2)) <= p.splash) {
-                                targetEnv.hp -= p.damage; applyStatusEffect(targetEnv, p.effect, p.damage); updateMonsterHp(targetEnv);
+                                targetEnv.hp -= p.damage; if(p.slowEff) targetEnv.slowDuration = 1800; if(p.stunEff && Math.random() < 0.3) targetEnv.stunDuration = 800; updateMonsterHp(targetEnv);
                             }
                         }
                     } else {
-                        p.target.hp -= p.damage; applyStatusEffect(p.target, p.effect, p.damage); updateMonsterHp(p.target);
+                        p.target.hp -= p.damage; if(p.slowEff) p.target.slowDuration = 1800; if(p.stunEff && Math.random() < 0.3) p.target.stunDuration = 800; updateMonsterHp(p.target);
                     }
                     p.element.remove(); projectiles.splice(i, 1);
                 } else {
@@ -553,14 +527,9 @@
             }
 
             if (gameState.isWaveActive && enemies.length === 0 && document.querySelectorAll('.enemy-container').length === 0) {
-                gameState.isWaveActive = false; gameState.gold += 180 + (gameState.wave * 25); gameState.wave++; updateUI();
+                gameState.isWaveActive = false; gameState.gold += 150 + (gameState.wave * 20); gameState.wave++; updateUI();
             }
             requestAnimationFrame(mainLoop);
-        }
-
-        function applyStatusEffect(enemy, effect, damage) {
-            if(effect === 'slow') enemy.slowDuration = 2000;
-            if(effect === 'poison') { enemy.poisonDuration = 3500; enemy.poisonDamage = Math.ceil(damage * 0.06); }
         }
 
         function updateMonsterHp(enemy) {
@@ -573,8 +542,8 @@
         }
 
         function endGame() {
-            document.getElementById('game-over-screen').style.display = 'flex';
-            document.getElementById('final-wave').innerText = `최종 방어: Wave ${gameState.wave}`;
+            document.getElementById('game-over').style.display = 'flex';
+            document.getElementById('txt-final-wave').innerText = `최종 방어: Wave ${gameState.wave}`;
         }
 
         updateUI(); requestAnimationFrame(mainLoop);
